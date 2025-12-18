@@ -139,3 +139,73 @@ export async function deleteEntry(dateStr: string) {
         throw new Error('Failed to delete entry');
     }
 }
+
+export async function getUserStats() {
+    try {
+        const session = await getSession();
+        if (!session || !session.userId) return { totalEntries: 0, streak: 0, frequentMood: '#8b5cf6' };
+
+        await connectDB();
+
+        // 1. Total Entries
+        const totalEntries = await Entry.countDocuments({ userId: session.userId } as any);
+
+        // 2. Streak Calculation
+        const entries = await Entry.find({ userId: session.userId } as any)
+            .sort({ date: -1 })
+            .select('date')
+            .lean();
+
+        let streak = 0;
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        if (entries.length > 0) {
+            const latest = new Date(entries[0].date);
+            const latestNormalized = new Date(latest.getFullYear(), latest.getMonth(), latest.getDate());
+
+            // Check if latest entry is today or yesterday
+            const diffFromToday = (today.getTime() - latestNormalized.getTime()) / (1000 * 60 * 60 * 24);
+
+            if (diffFromToday <= 1) {
+                streak = 1;
+                let currentDate = latestNormalized;
+
+                for (let i = 1; i < entries.length; i++) {
+                    const prevEntryDate = new Date(entries[i].date);
+                    const prevNormalized = new Date(prevEntryDate.getFullYear(), prevEntryDate.getMonth(), prevEntryDate.getDate());
+
+                    const diff = (currentDate.getTime() - prevNormalized.getTime()) / (1000 * 60 * 60 * 24);
+
+                    if (diff === 1) {
+                        streak++;
+                        currentDate = prevNormalized;
+                    } else if (diff > 1) {
+                        break;
+                    }
+                    // If diff === 0 (same day), continue loop without breaking or incrementing
+                }
+            }
+        }
+
+        // 3. Most Frequent Mood
+        const moodAggregation = await Entry.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(session.userId as string) } },
+            { $group: { _id: "$moodColor", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 1 }
+        ]);
+
+        const frequentMood = moodAggregation.length > 0 ? moodAggregation[0]._id : '#8b5cf6';
+
+        return {
+            totalEntries,
+            streak,
+            frequentMood
+        };
+
+    } catch (error) {
+        console.error('Failed to fetch user stats:', error);
+        return { totalEntries: 0, streak: 0, frequentMood: '#8b5cf6' };
+    }
+}

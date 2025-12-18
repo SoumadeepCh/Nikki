@@ -1,8 +1,12 @@
+
+import Link from 'next/link';
+import connectDB from '@/lib/db';
+import User from '@/models/User';
 import ClientPage from './components/ClientPage';
 import { verifyToken } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import { logout } from './auth/actions';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { getUserStats } from './actions';
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -13,19 +17,20 @@ export default async function Home() {
     redirect('/login');
   }
 
+  // Fetch full user details to get the name
+  // Note: we need to handle the case where user might be deleted but session exists
+  await connectDB();
+  const user = await User.findById(session.userId);
+  const stats = await getUserStats();
+
+  if (!user) {
+    // Session invalid if user doesn't exist
+    redirect('/login');
+  }
+
   return (
     <div className="relative">
-      <div className="absolute top-4 right-4 z-50">
-        <form action={logout}>
-          <button
-            type="submit"
-            className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors bg-white/50 px-3 py-1 rounded-md backdrop-blur-sm"
-          >
-            Sign out
-          </button>
-        </form>
-      </div>
-      <ClientPage />
+      <ClientPage userName={user.name} userEmail={user.email} stats={stats} />
     </div>
   );
 }
