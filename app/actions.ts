@@ -21,8 +21,9 @@ export async function getMonthEntries(year: number, month: number) {
         if (!session) return [];
 
         await connectDB();
-        const startDate = startOfMonth(new Date(year, month));
-        const endDate = endOfMonth(new Date(year, month));
+        // Use UTC dates to avoid timezone shifting
+        const startDate = new Date(Date.UTC(year, month, 1));
+        const endDate = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
         const query: any = {
             userId: session.userId,
@@ -50,9 +51,10 @@ export async function getEntryByDate(dateStr: string) {
         if (!session) return null;
 
         await connectDB();
-        const date = new Date(dateStr);
-        const start = startOfDay(date);
-        const end = endOfDay(date);
+        // dateStr is YYYY-MM-DD
+        const start = new Date(dateStr); // Parses as UTC 00:00:00
+        const end = new Date(start);
+        end.setUTCHours(23, 59, 59, 999);
 
         const query: any = {
             userId: session.userId,
@@ -81,9 +83,10 @@ export async function saveEntry(dateStr: string, content: string, moodColor: str
         if (!session) throw new Error('Unauthorized');
 
         await connectDB();
-        const date = new Date(dateStr);
-        const start = startOfDay(date);
-        const end = endOfDay(date);
+        // dateStr is YYYY-MM-DD
+        const start = new Date(dateStr); // Parses as UTC 00:00:00
+        const end = new Date(start);
+        end.setUTCHours(23, 59, 59, 999);
 
         // Upsert: Try to update first, if not found, create new
         const query: any = {
@@ -122,9 +125,10 @@ export async function deleteEntry(dateStr: string) {
         if (!session) throw new Error('Unauthorized');
 
         await connectDB();
-        const date = new Date(dateStr);
-        const start = startOfDay(date);
-        const end = endOfDay(date);
+        // dateStr is YYYY-MM-DD
+        const start = new Date(dateStr); // Parses as UTC 00:00:00
+        const end = new Date(start);
+        end.setUTCHours(23, 59, 59, 999);
 
         const query: any = {
             userId: session.userId,

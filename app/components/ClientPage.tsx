@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 import UserMenu from './UserMenu';
 import ProfileModal from './ProfileModal';
 import SettingsModal from './SettingsModal';
+import { format } from 'date-fns';
 
 interface ClientPageProps {
     userName: string;
@@ -45,7 +46,7 @@ export default function ClientPage({ userName, userEmail, stats }: ClientPagePro
     // Fetch specific entry when selected date changes
     useEffect(() => {
         const fetchSpecificEntry = async () => {
-            const data = await getEntryByDate(selectedDate.toISOString());
+            const data = await getEntryByDate(format(selectedDate, 'yyyy-MM-dd'));
             if (data) {
                 setEditorContent(data.content);
                 setEditorColor(data.moodColor);
@@ -58,7 +59,7 @@ export default function ClientPage({ userName, userEmail, stats }: ClientPagePro
     }, [selectedDate]);
 
     const handleSave = async (content: string, color: string) => {
-        const saved = await saveEntry(selectedDate.toISOString(), content, color);
+        const saved = await saveEntry(format(selectedDate, 'yyyy-MM-dd'), content, color);
 
         // Optimistic or Real-time update of local entries
         setEntries(prev => {
@@ -71,7 +72,7 @@ export default function ClientPage({ userName, userEmail, stats }: ClientPagePro
     };
 
     const handleDelete = async () => {
-        await deleteEntry(selectedDate.toISOString());
+        await deleteEntry(format(selectedDate, 'yyyy-MM-dd'));
 
         // Update calendar state
         setEntries(prev => prev.filter(e => new Date(e.date).toDateString() !== selectedDate.toDateString()));

@@ -51,7 +51,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 className="w-full max-w-lg relative animate-in zoom-in-95 duration-200"
             >
                 {/* Checkered glass effect card */}
-                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl">
+                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-950/85 shadow-2xl backdrop-blur-xl">
 
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
