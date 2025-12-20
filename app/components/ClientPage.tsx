@@ -172,7 +172,7 @@ export default function ClientPage({ userName, userEmail, profileImage: initialP
                     <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-pink-600/20 blur-[130px]" />
                 </div>
 
-                <div className="md:sticky md:top-12 self-start space-y-8">
+                <div className="fixed top-4 right-4 z-50">
                     <UserMenu
                         userName={userName}
                         profileImage={profileImage}

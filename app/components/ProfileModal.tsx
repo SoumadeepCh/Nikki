@@ -1,11 +1,13 @@
 'use client';
 
 import Modal from './Modal';
-import { Camera, Loader2 } from 'lucide-react';
+import { Camera, Loader2, Shield, ShieldOff, Fingerprint, Trash2 } from 'lucide-react';
 import { updateProfileImage } from '../actions';
 import { uploadImage } from '../utils/cloudinary';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
+import { useLocalLock } from './LocalLockProvider';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProfileModalProps {
     isOpen: boolean;
@@ -24,6 +26,9 @@ interface ProfileModalProps {
 export default function ProfileModal({ isOpen, onClose, userName, email = 'user@example.com', stats, profileImage, onUpdateImage }: ProfileModalProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const { hasPIN, setPIN, clearPIN } = useLocalLock();
+    const [isSettingPIN, setIsSettingPIN] = useState(false);
+    const [newPIN, setNewPIN] = useState('');
 
     useEffect(() => {
         setMounted(true);
@@ -113,6 +118,97 @@ export default function ProfileModal({ isOpen, onClose, userName, email = 'user@
                         </div>
                         <div className="text-xs text-white/40 uppercase tracking-wide">Mood</div>
                     </div>
+                </div>
+
+                {/* Privacy Lock Section */}
+                <div className="w-full mt-8 pt-8 border-t border-white/5">
+                    <div className="flex items-center justify-between mb-4 px-4">
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-lg ${hasPIN ? 'bg-accent/20 text-accent' : 'bg-white/5 text-white/40'}`}>
+                                {hasPIN ? <Shield size={20} /> : <ShieldOff size={20} />}
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-white">Privacy Lock</h3>
+                                <p className="text-xs text-white/40">Require PIN on launch</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                            {hasPIN ? (
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Disable privacy lock?')) {
+                                            clearPIN();
+                                            toast.success('Privacy lock disabled');
+                                        }
+                                    }}
+                                    className="p-2 bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-400 rounded-lg transition-all"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            ) : (
+                                !isSettingPIN && (
+                                    <button
+                                        onClick={() => setIsSettingPIN(true)}
+                                        className="bg-white text-black px-4 py-1.5 rounded-full text-xs font-bold hover:bg-neutral-200 transition-all"
+                                    >
+                                        Setup PIN
+                                    </button>
+                                )
+                            )}
+                        </div>
+                    </div>
+
+                    <AnimatePresence>
+                        {isSettingPIN && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="px-4 pb-4 overflow-hidden"
+                            >
+                                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-xs font-bold text-white/60 uppercase tracking-widest">Set 4-Digit PIN</label>
+                                        <button
+                                            onClick={() => {
+                                                setIsSettingPIN(false);
+                                                setNewPIN('');
+                                            }}
+                                            className="text-white/30 hover:text-white"
+                                        >
+                                            <ShieldOff size={14} />
+                                        </button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="password"
+                                            maxLength={4}
+                                            placeholder="Enter PIN"
+                                            value={newPIN}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/\D/g, '');
+                                                setNewPIN(val);
+                                            }}
+                                            className="flex-1 bg-neutral-900 border border-white/10 rounded-lg px-3 py-2 text-white outline-none focus:border-accent transition-all"
+                                        />
+                                        <button
+                                            disabled={newPIN.length !== 4}
+                                            onClick={() => {
+                                                setPIN(newPIN);
+                                                setIsSettingPIN(false);
+                                                setNewPIN('');
+                                                toast.success('Privacy lock enabled!');
+                                            }}
+                                            className="bg-accent text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 disabled:opacity-50 transition-all"
+                                        >
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </Modal>

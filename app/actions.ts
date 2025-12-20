@@ -359,3 +359,22 @@ export async function updateProfileImage(imageUrl: string) {
         throw new Error('Failed to update profile image');
     }
 }
+
+export async function verifyPassword(password: string) {
+    try {
+        const session = await getSession();
+        if (!session) return { success: false, error: 'Unauthorized' };
+
+        await connectDB();
+        const user = await User.findById(session.userId).select('+password');
+        if (!user || !user.password) {
+            return { success: false, error: 'User not found' };
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        return { success: isMatch };
+    } catch (error) {
+        console.error('Failed to verify password:', error);
+        return { success: false, error: 'Verification failed' };
+    }
+}
