@@ -12,7 +12,7 @@ function SubmitButton() {
         <button
             type="submit"
             disabled={pending}
-            className="w-full bg-violet-600 text-white rounded-lg px-4 py-2 hover:bg-violet-700 transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] disabled:opacity-50 font-medium"
+            className="w-full bg-accent text-white rounded-lg px-4 py-2 hover:bg-accent/90 transition-all shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] hover:shadow-[0_0_25px_rgba(var(--accent-rgb),0.5)] disabled:opacity-50 font-medium"
         >
             {pending ? 'Logging in...' : 'Login'}
         </button>
@@ -59,7 +59,7 @@ export default function LoginPage() {
                                     type="email"
                                     autoComplete="email"
                                     required
-                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg bg-black/20 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent sm:text-sm transition-all text-center"
+                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg bg-black/20 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent sm:text-sm transition-all text-center"
                                     placeholder="you@example.com"
                                 />
                             </div>
@@ -76,7 +76,7 @@ export default function LoginPage() {
                                     type="password"
                                     autoComplete="current-password"
                                     required
-                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg bg-black/20 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent sm:text-sm transition-all text-center"
+                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg bg-black/20 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent sm:text-sm transition-all text-center"
                                     placeholder="••••••••"
                                 />
                             </div>

@@ -51,3 +51,5 @@ Render this Modal inside
 ClientPage.tsx
 .
 Control visibility with useState (e.g., isProfileOpen).
+
+autosave kor save tipte hchee bar bar ar phto upload krte parchii na

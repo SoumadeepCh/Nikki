@@ -14,23 +14,42 @@ export default async function Home() {
   const session = token ? await verifyToken(token) : null;
 
   if (!session) {
-    redirect('/login');
+    // Guest Mode
+    return (
+      <div className="relative">
+        <ClientPage userName="Guest" userEmail="" stats={{ totalEntries: 0, streak: 0, frequentMood: '#8b5cf6' }} isGuest={true} />
+      </div>
+    );
   }
 
   // Fetch full user details to get the name
   // Note: we need to handle the case where user might be deleted but session exists
   await connectDB();
   const user = await User.findById(session.userId);
-  const stats = await getUserStats();
 
   if (!user) {
     // Session invalid if user doesn't exist
     redirect('/login');
   }
 
+  const stats = await getUserStats();
+
+  // Prepare settings with defaults if undefined
+  const userSettings = {
+    themeColor: user.settings?.themeColor || 'violet',
+    reducedMotion: user.settings?.reducedMotion || false
+  };
+
   return (
     <div className="relative">
-      <ClientPage userName={user.name} userEmail={user.email} stats={stats} />
+      <ClientPage
+        userName={user.name}
+        userEmail={user.email}
+        profileImage={user.profileImage}
+        stats={stats}
+        isGuest={false}
+        initialSettings={userSettings}
+      />
     </div>
   );
 }

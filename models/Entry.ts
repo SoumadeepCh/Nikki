@@ -5,6 +5,7 @@ export interface IEntry extends Document {
     content: string;
     moodColor: string;
     userId: Schema.Types.ObjectId;
+    images?: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,6 +27,10 @@ const EntrySchema: Schema = new Schema({
     moodColor: {
         type: String,
         default: '#8b5cf6' // Default violet
+    },
+    images: {
+        type: [String],
+        default: []
     }
 }, {
     timestamps: true,

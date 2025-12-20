@@ -74,7 +74,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 
                     {/* Decorative Background Gradients */}
                     <div className="absolute top-0 left-0 w-full h-full pointer-events-none -z-10">
-                        <div className="absolute top-[-50%] left-[-50%] w-full h-full bg-violet-500/10 blur-[100px]" />
+                        <div className="absolute top-[-50%] left-[-50%] w-full h-full bg-accent/10 blur-[100px]" />
                         <div className="absolute bottom-[-50%] right-[-50%] w-full h-full bg-fuchsia-500/10 blur-[100px]" />
                     </div>
                 </div>

@@ -8,12 +8,34 @@
   /* Zinc 50 */
   --card-bg: rgba(24, 24, 27, 0.4);
   /* Zinc 950 with opacity */
+  --accent-color: #7c3aed;
+  /* Default violet-600 */
+  --accent-rgb: 124, 58, 237;
+}
+
+.theme-violet {
+  --accent-color: #7c3aed;
+  /* violet-600 */
+  --accent-rgb: 124, 58, 237;
+}
+
+.theme-teal {
+  --accent-color: #0d9488;
+  /* teal-600 */
+  --accent-rgb: 13, 148, 136;
+}
+
+.theme-orange {
+  --accent-color: #ea580c;
+  /* orange-600 */
+  --accent-rgb: 234, 88, 12;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card-bg);
+  --color-accent: var(--accent-color);
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
@@ -33,6 +55,18 @@ body {
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .polaroid {
+    transition: all 0.3s ease;
+  }
+
+  .polaroid:hover .group-hover\:opacity-100 {
+    opacity: 1;
+  }
+
+  .polaroid:hover {
+    z-index: 50;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
