@@ -378,3 +378,79 @@ export async function verifyPassword(password: string) {
         return { success: false, error: 'Verification failed' };
     }
 }
+
+// Vent Words actions
+export async function getVentWords() {
+    try {
+        const session = await getSession();
+        if (!session) return [];
+
+        await connectDB();
+        const VentWord = (await import('@/models/VentWord')).default;
+
+        const words = await VentWord.find({ userId: session.userId })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return words.map(word => ({
+            _id: word._id.toString(),
+            word: word.word,
+            createdAt: word.createdAt
+        }));
+    } catch (error) {
+        console.error('Failed to fetch vent words:', error);
+        return [];
+    }
+}
+
+export async function addVentWord(word: string) {
+    try {
+        const session = await getSession();
+        if (!session) throw new Error('Unauthorized');
+
+        if (!word || word.trim().length === 0) {
+            throw new Error('Word cannot be empty');
+        }
+
+        if (word.length > 50) {
+            throw new Error('Word is too long (max 50 characters)');
+        }
+
+        await connectDB();
+        const VentWord = (await import('@/models/VentWord')).default;
+
+        const ventWord = await VentWord.create({
+            userId: session.userId,
+            word: word.trim()
+        });
+
+        revalidatePath('/vent');
+        return {
+            _id: ventWord._id.toString(),
+            word: ventWord.word,
+            createdAt: ventWord.createdAt
+        };
+    } catch (error) {
+        console.error('Failed to add vent word:', error);
+        throw error;
+    }
+}
+
+export async function clearVentWords() {
+    try {
+        const session = await getSession();
+        if (!session) throw new Error('Unauthorized');
+
+        await connectDB();
+        const VentWord = (await import('@/models/VentWord')).default;
+
+        await VentWord.deleteMany({ userId: session.userId });
+
+        revalidatePath('/vent');
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to clear vent words:', error);
+        throw new Error('Failed to clear vent words');
+    }
+}
+
