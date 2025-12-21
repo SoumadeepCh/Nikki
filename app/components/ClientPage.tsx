@@ -9,6 +9,7 @@ import UserMenu from './UserMenu';
 import ProfileModal from './ProfileModal';
 import SettingsModal from './SettingsModal';
 import { format } from 'date-fns';
+import Link from 'next/link';
 import {
     getGuestMonthEntries,
     getGuestEntryByDate,
@@ -218,6 +219,19 @@ export default function ClientPage({ userName, userEmail, profileImage: initialP
                         />
                     </div>
                 </div>
+
+                {/* Vent Button - Bottom Left */}
+                {!isGuest && (
+                    <Link
+                        href="/vent"
+                        className="fixed bottom-6 left-6 px-6 py-3 glass rounded-full border border-accent/30 hover:border-accent/50 hover:bg-accent/10 transition-all duration-300 group z-50"
+                    >
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl">💭</span>
+                            <span className="font-semibold text-accent">Vent</span>
+                        </div>
+                    </Link>
+                )}
 
                 <Toaster theme="dark" position="bottom-right" />
 
